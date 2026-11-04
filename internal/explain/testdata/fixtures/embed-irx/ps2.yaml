@@ -1,0 +1,14 @@
+project: embed-irx-example
+
+targets:
+  - name: helper
+    type: iop
+    sources:
+      - src/iop/helper.c
+
+  - name: main
+    type: ee
+    sources:
+      - src/ee/main.c
+    embed_irx:
+      - helper

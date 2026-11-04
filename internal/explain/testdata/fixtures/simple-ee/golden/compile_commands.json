@@ -1,0 +1,21 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/main.c",
+    "output": "obj/hello/src/main.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-I<PS2DEV>/toolchain/ee/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-c",
+      "<PROJECT_ROOT>/src/main.c",
+      "-o",
+      "<OUT_DIR>/obj/hello/src/main.o"
+    ]
+  }
+]

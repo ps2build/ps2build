@@ -1,0 +1,20 @@
+project: cxx-lib-example
+
+targets:
+  # A C++ ee_lib. The "main" target below is plain C, but still needs the
+  # g++ link driver - see the LINK(ee,c++) rule its build.ninja edge uses -
+  # because it links a C++ archive: plain gcc doesn't implicitly add
+  # -lstdc++ the way g++ does, so this was a real "compiles fine, then
+  # fails at link with undefined libstdc++ references" bug before ps2build
+  # detected this case.
+  - name: greeter
+    type: ee_lib
+    sources:
+      - src/lib/greeter.cpp
+
+  - name: main
+    type: ee
+    sources:
+      - src/ee/main.c
+    libs:
+      - greeter

@@ -1,0 +1,7 @@
+project: mymodule
+
+targets:
+  - name: mymodule
+    type: iop
+    sources:
+      - src/module.c

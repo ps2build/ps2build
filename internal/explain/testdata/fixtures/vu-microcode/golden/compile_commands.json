@@ -1,0 +1,32 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/main.c",
+    "output": "obj/main/src/main.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-I<PS2DEV>/toolchain/ee/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-c",
+      "<PROJECT_ROOT>/src/main.c",
+      "-o",
+      "<OUT_DIR>/obj/main/src/main.o"
+    ]
+  },
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/vu1_probe.vsm",
+    "output": "obj/main/src/vu1_probe.vsm.o",
+    "arguments": [
+      "<PS2DEV>/tools/dvp-as",
+      "<PROJECT_ROOT>/src/vu1_probe.vsm",
+      "-o",
+      "<OUT_DIR>/obj/main/src/vu1_probe.vsm.o"
+    ]
+  }
+]

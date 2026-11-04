@@ -1,0 +1,7 @@
+project: bad
+
+targets:
+  - name: main
+    type: dvp
+    sources:
+      - src/main.c

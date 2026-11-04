@@ -1,0 +1,27 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/main.c",
+    "output": "obj/custom/src/main.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-O3",
+      "-Wall",
+      "-ffunction-sections",
+      "-gdwarf-2",
+      "-gz",
+      "-DMY_FEATURE=1",
+      "-DDEBUG_LOGGING",
+      "-I<PS2DEV>/toolchain/ee/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-I<PROJECT_ROOT>/vendor/include",
+      "-Wextra",
+      "-c",
+      "<PROJECT_ROOT>/src/main.c",
+      "-o",
+      "<OUT_DIR>/obj/custom/src/main.o"
+    ]
+  }
+]

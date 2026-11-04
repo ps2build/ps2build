@@ -1,0 +1,55 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/ee/stub.c",
+    "output": "obj/stub/src/ee/stub.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-I<PS2DEV>/toolchain/ee/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-c",
+      "<PROJECT_ROOT>/src/ee/stub.c",
+      "-o",
+      "<OUT_DIR>/obj/stub/src/ee/stub.o"
+    ]
+  },
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/ee/main.c",
+    "output": "obj/main/src/ee/main.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-I<PS2DEV>/toolchain/ee/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-I<OUT_DIR>/generated",
+      "-c",
+      "<PROJECT_ROOT>/src/ee/main.c",
+      "-o",
+      "<OUT_DIR>/obj/main/src/ee/main.o"
+    ]
+  },
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<OUT_DIR>/generated/stub_irx.c",
+    "output": "obj/_embed/stub_irx.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/ee/bin/mips64r5900el-ps2-elf-gcc",
+      "-D_EE",
+      "-G0",
+      "-c",
+      "<OUT_DIR>/generated/stub_irx.c",
+      "-o",
+      "<OUT_DIR>/obj/_embed/stub_irx.o"
+    ]
+  }
+]

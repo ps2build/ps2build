@@ -1,0 +1,31 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/main.c",
+    "output": "obj/hello/src/main.o",
+    "arguments": [
+      "<PS2DEV>/llvm-toolchain/ee/bin/mips64r5900el-ps2-elf-clang",
+      "--target=mips64el-unknown-elf",
+      "-mcpu=r5900",
+      "-mabi=n32",
+      "-fno-pic",
+      "-D__ps2sdk__",
+      "-D_GNU_SOURCE",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include/c++/v1",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-isystem<PS2DEV>/packages/core/common/include",
+      "-std=gnu23",
+      "-c",
+      "<PROJECT_ROOT>/src/main.c",
+      "-o",
+      "<OUT_DIR>/obj/hello/src/main.o"
+    ]
+  }
+]

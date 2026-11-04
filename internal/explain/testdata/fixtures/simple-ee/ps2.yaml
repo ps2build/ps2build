@@ -1,0 +1,7 @@
+project: hello
+
+targets:
+  - name: hello
+    type: ee
+    sources:
+      - src/main.c

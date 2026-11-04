@@ -1,0 +1,23 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/module.c",
+    "output": "obj/mymodule/src/module.o",
+    "arguments": [
+      "<PS2DEV>/toolchain/iop/bin/mipsel-none-elf-gcc",
+      "-D_IOP",
+      "-fno-builtin",
+      "-G0",
+      "-Os",
+      "-Wall",
+      "-msoft-float",
+      "-mno-explicit-relocs",
+      "-I<PS2DEV>/toolchain/iop/include",
+      "-I<PS2DEV>/packages/core/common/include",
+      "-c",
+      "<PROJECT_ROOT>/src/module.c",
+      "-o",
+      "<OUT_DIR>/obj/mymodule/src/module.o"
+    ]
+  }
+]

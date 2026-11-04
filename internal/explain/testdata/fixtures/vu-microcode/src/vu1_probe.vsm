@@ -1,0 +1,8 @@
+.vu
+.global vu1_probe_start
+.global vu1_probe_end
+
+vu1_probe_start:
+	nop nop
+	nop[e] nop
+vu1_probe_end:

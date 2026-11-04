@@ -1,0 +1,14 @@
+project: embed-irx-ee-example
+
+targets:
+  - name: stub
+    type: ee
+    sources:
+      - src/ee/stub.c
+
+  - name: main
+    type: ee
+    sources:
+      - src/ee/main.c
+    embed_irx:
+      - stub

@@ -1,0 +1,8 @@
+project: vu-microcode-example
+
+targets:
+  - name: main
+    type: ee
+    sources:
+      - src/main.c
+      - src/vu1_probe.vsm

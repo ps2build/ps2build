@@ -1,0 +1,7 @@
+/ps2build
+/ps2build.exe
+*.exe~
+/build/
+/.idea/
+/staging/
+.DS_Store

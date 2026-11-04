@@ -1,0 +1,23 @@
+project: overrides-example
+
+targets:
+  - name: custom
+    type: ee
+    sources:
+      - src/main.c
+    include_dirs:
+      - vendor/include
+    defines:
+      - MY_FEATURE=1
+      - DEBUG_LOGGING
+    cflags:
+      - -Wextra
+    ldflags:
+      - -Wl,-Map=custom.map
+    libs:
+      - m
+      - png
+    linkfile: custom/linkfile
+    opt: -O3
+    debug: true
+    output_bin: true

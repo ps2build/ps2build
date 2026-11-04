@@ -1,0 +1,14 @@
+project: bad
+
+targets:
+  - name: main
+    type: ee
+    sources:
+      - src/main.c
+    embed_irx:
+      - other
+
+  - name: other
+    type: ee_lib
+    sources:
+      - src/other.c

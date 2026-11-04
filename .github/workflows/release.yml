@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Test
+        run: go test ./...
+
+      - name: Build release binaries
+        run: |
+          mkdir -p dist/release
+          version="${GITHUB_REF_NAME}"
+          build() {
+            local goos="$1" goarch="$2" ext="$3"
+            local out="dist/release/ps2build-${version}-${goos}-${goarch}${ext}"
+            echo "building $out"
+            GOOS="$goos" GOARCH="$goarch" go build -ldflags "-s -w -X github.com/ps2build/ps2build/internal/cli.version=${version}" -o "$out" ./cmd/ps2build
+          }
+          build windows amd64 .exe
+          build linux amd64 ""
+          build darwin amd64 ""
+          build darwin arm64 ""
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/release/*

@@ -1,0 +1,81 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/iop/helper.c",
+    "output": "obj/helper/src/iop/helper.o",
+    "arguments": [
+      "<PS2DEV>/llvm-toolchain/iop/bin/mipsel-none-elf-clang",
+      "--target=mipsel-unknown-elf",
+      "-mcpu=r3000a",
+      "-mabi=32",
+      "-mno-abicalls",
+      "-D_IOP",
+      "-fno-builtin",
+      "-G0",
+      "-Os",
+      "-Wall",
+      "-msoft-float",
+      "-ffreestanding",
+      "-isystem<PS2DEV>/packages/core/common/include",
+      "-std=gnu23",
+      "-c",
+      "<PROJECT_ROOT>/src/iop/helper.c",
+      "-o",
+      "<OUT_DIR>/obj/helper/src/iop/helper.o"
+    ]
+  },
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/ee/main.c",
+    "output": "obj/main/src/ee/main.o",
+    "arguments": [
+      "<PS2DEV>/llvm-toolchain/ee/bin/mips64r5900el-ps2-elf-clang",
+      "--target=mips64el-unknown-elf",
+      "-mcpu=r5900",
+      "-mabi=n32",
+      "-fno-pic",
+      "-D__ps2sdk__",
+      "-D_GNU_SOURCE",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include/c++/v1",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include",
+      "-D_EE",
+      "-G0",
+      "-O2",
+      "-Wall",
+      "-ffunction-sections",
+      "-isystem<PS2DEV>/packages/core/common/include",
+      "-isystem<OUT_DIR>/generated",
+      "-std=gnu23",
+      "-c",
+      "<PROJECT_ROOT>/src/ee/main.c",
+      "-o",
+      "<OUT_DIR>/obj/main/src/ee/main.o"
+    ]
+  },
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<OUT_DIR>/generated/helper_irx.c",
+    "output": "obj/_embed/helper_irx.o",
+    "arguments": [
+      "<PS2DEV>/llvm-toolchain/ee/bin/mips64r5900el-ps2-elf-clang",
+      "--target=mips64el-unknown-elf",
+      "-mcpu=r5900",
+      "-mabi=n32",
+      "-fno-pic",
+      "-D__ps2sdk__",
+      "-D_GNU_SOURCE",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include/c++/v1",
+      "-isystem",
+      "<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/include",
+      "-D_EE",
+      "-G0",
+      "-c",
+      "<OUT_DIR>/generated/helper_irx.c",
+      "-o",
+      "<OUT_DIR>/obj/_embed/helper_irx.o"
+    ]
+  }
+]

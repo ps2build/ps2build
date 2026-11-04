@@ -1,0 +1,27 @@
+[
+  {
+    "directory": "<OUT_DIR>",
+    "file": "<PROJECT_ROOT>/src/module.c",
+    "output": "obj/mymodule/src/module.o",
+    "arguments": [
+      "<PS2DEV>/llvm-toolchain/iop/bin/mipsel-none-elf-clang",
+      "--target=mipsel-unknown-elf",
+      "-mcpu=r3000a",
+      "-mabi=32",
+      "-mno-abicalls",
+      "-D_IOP",
+      "-fno-builtin",
+      "-G0",
+      "-Os",
+      "-Wall",
+      "-msoft-float",
+      "-ffreestanding",
+      "-isystem<PS2DEV>/packages/core/common/include",
+      "-std=gnu23",
+      "-c",
+      "<PROJECT_ROOT>/src/module.c",
+      "-o",
+      "<OUT_DIR>/obj/mymodule/src/module.o"
+    ]
+  }
+]

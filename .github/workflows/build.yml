@@ -1,0 +1,131 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Check formatting
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "The following files are not gofmt-formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Test
+        run: go test ./...
+
+      - name: Install go-licenses
+        run: |
+          go install github.com/google/go-licenses@v1.6.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Check license types
+        run: go-licenses check ./cmd/... --disallowed_types=forbidden,restricted,reciprocal,unknown
+
+      - name: Check licenses/ is up to date
+        run: |
+          cp -r licenses /tmp/licenses-committed
+          .github/scripts/generate-licenses.sh
+          if ! diff -rq /tmp/licenses-committed licenses; then
+            echo "licenses/ is out of date - run .github/scripts/generate-licenses.sh and commit the result" >&2
+            exit 1
+          fi
+
+  smoke-test-real-toolchain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build this commit's own ps2build
+        run: go build -o /tmp/ps2build-new ./cmd/ps2build
+
+      - uses: ps2build/setup-sdk@master
+        with:
+          ps2dev: /opt/ps2dev
+
+      - name: Substitute this commit's ps2build for the published one
+        run: |
+          installed="$(find /opt/ps2dev -maxdepth 2 -type f -name ps2build)"
+          if [ -z "$installed" ]; then
+            echo "could not find the installed ps2build binary under /opt/ps2dev" >&2
+            exit 1
+          fi
+          cp /tmp/ps2build-new "$installed"
+          chmod +x "$installed"
+          "$installed" --version
+
+      - name: Build every fixture project for real, check .clangd/.gitignore
+        run: |
+          export PATH="/opt/ps2dev:$PATH"
+          fail=0
+          for fixture in internal/explain/testdata/fixtures/*/; do
+            name="$(basename "$fixture")"
+            if [ "$name" = "overrides" ]; then
+              action=generate
+            else
+              action=build
+            fi
+            work="$(mktemp -d)"
+            cp -r "$fixture." "$work"
+            echo "::group::$name"
+            if ! (cd "$work" && ps2build "$action"); then
+              echo "FAIL: $name did not $action" >&2
+              fail=1
+              echo "::endgroup::"
+              continue
+            fi
+            if [ ! -f "$work/.clangd" ]; then
+              echo "FAIL: $name produced no .clangd" >&2
+              fail=1
+            elif grep -qE '/opt/ps2dev|isystem' "$work/.clangd"; then
+              echo "FAIL: $name's .clangd contains a machine-specific isystem path:" >&2
+              cat "$work/.clangd" >&2
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
+
+      - name: init a fresh project, check it scaffolds and builds clean
+        run: |
+          export PATH="/opt/ps2dev:$PATH"
+          work="$(mktemp -d)"
+          cd "$work"
+          ps2build init myproject
+          cd myproject
+          test -f .clangd
+          test -f .gitignore
+          if grep -qF '.clangd' .gitignore; then
+            echo "FAIL: .gitignore still ignores .clangd" >&2
+            exit 1
+          fi
+          ps2build build
+          ls build/bin/myproject.elf
+
+      - name: ps2build update runs clean against what it just installed
+        run: |
+          export PATH="/opt/ps2dev:$PATH"
+          ps2build update --check

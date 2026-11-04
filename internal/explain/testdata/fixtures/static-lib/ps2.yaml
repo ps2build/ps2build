@@ -1,0 +1,14 @@
+project: static-lib-example
+
+targets:
+  - name: mymath
+    type: ee_lib
+    sources:
+      - src/lib/mymath.c
+
+  - name: main
+    type: ee
+    sources:
+      - src/ee/main.c
+    libs:
+      - mymath
