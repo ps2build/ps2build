@@ -31,7 +31,7 @@ type component struct {
 var allComponents = []component{
 	{Name: "ps2build", Repo: "ps2build/ps2build", AssetPrefix: "ps2build-", WindowsSuffix: "-windows-amd64.exe", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: utils.ExeSuffix("ps2build"), SelfReplace: true},
 	{Name: "toolchain", Repo: "ps2build/toolchain", AssetPrefix: "ps2-toolchain-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: "toolchain"},
-	{Name: "llvm-toolchain", Repo: "ps2build/llvm-toolchain", AssetPrefix: "ps2-llvm-toolchain-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", Test: "llvm-toolchain", Optional: true},
+	{Name: "llvm-toolchain", Repo: "ps2build/llvm-toolchain", AssetPrefix: "ps2-llvm-toolchain-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: "llvm-toolchain", Optional: true},
 	{Name: "ninja", Repo: "ps2build/ninja", AssetPrefix: "ninja-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: filepath.Join("tools", utils.ExeSuffix("ninja"))},
 	{Name: "tools", Repo: "ps2build/tools", AssetPrefix: "tools-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: filepath.Join("tools", utils.ExeSuffix("bin2c"))},
 	{Name: "vcl", Repo: "ps2build/vcl", AssetPrefix: "vcl-", AssetSuffix: ".zip", WindowsSuffix: "-windows-amd64", LinuxSuffix: "-linux-amd64", DarwinSuffix: "-darwin-arm64", Test: filepath.Join("vcl", utils.ExeSuffix("vcl"))},
