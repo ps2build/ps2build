@@ -38,6 +38,11 @@ jobs:
           build darwin amd64 ""
           build darwin arm64 ""
 
+      - name: Checksums
+        run: |
+          cd dist/release
+          sha256sum ps2build-* > SHA256SUMS
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
