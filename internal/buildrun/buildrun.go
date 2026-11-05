@@ -17,6 +17,8 @@ type Result struct {
 	// whether/how to parse diagnostics out of it (see ParseDiagnostics).
 	Stdout string
 	Stderr string
+	// Err is the error from starting or running ninja, nil on success.
+	Err error
 }
 
 func FindNinja() (string, error) {
@@ -54,5 +56,6 @@ func Run(selfExe, outDir string, stdout, stderr io.Writer) (Result, error) {
 		Success: runErr == nil,
 		Stdout:  outBuf.String(),
 		Stderr:  errBuf.String(),
+		Err:     runErr,
 	}, nil
 }

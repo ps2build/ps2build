@@ -32,7 +32,7 @@ func runBuild(configPath, outDir, toolchain string, stdout, stderr io.Writer) er
 		return err
 	}
 	if !result.Success {
-		return fmt.Errorf("ninja: build failed")
+		return fmt.Errorf("ninja: build failed: %w", result.Err)
 	}
 	return nil
 }
