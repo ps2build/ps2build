@@ -188,6 +188,9 @@ func fetchRelease(apiHost, repo, version string) (releaseInfo, error) {
 	}
 	if apiHost == "github.com" {
 		if version == "" || version == "latest" {
+			if rel, ok := latestFromManifest(repo); ok {
+				return rel, nil
+			}
 			url = fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", repo)
 		} else {
 			url = fmt.Sprintf("https://api.github.com/repos/%s/releases/tags/%s", repo, version)
