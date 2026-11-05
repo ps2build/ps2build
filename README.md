@@ -2,17 +2,7 @@
 
 # ps2build
 
-ps2build builds PlayStation 2 homebrew. A single `ps2.yaml` describes your EE and IOP targets; ps2build produces the build, IDE metadata and installable packages, and keeps the PS2 SDK and toolchain up to date.
-
-Documentation: [ps2build.dev](https://ps2build.dev).
-
 ## Install
-
-Windows (PowerShell):
-
-```
-irm https://ps2build.dev/install.ps1 | iex
-```
 
 Linux and macOS:
 
@@ -20,34 +10,17 @@ Linux and macOS:
 curl -sSfL https://ps2build.dev/install.sh | sh
 ```
 
-The installer downloads `ps2build`, verifies it, adds it to your `PATH` and runs `ps2build update` to install the toolchain and SDK. Its source and options are in [ps2build/ps2build.dev](https://github.com/ps2build/ps2build.dev).
+Windows (PowerShell):
 
-### Manual install
+```
+irm https://ps2build.dev/install.ps1 | iex
+```
 
-1. Download the binary for your platform and `SHA256SUMS` from the [latest release](https://github.com/ps2build/ps2build/releases/latest):
+This installs ps2build and runs `ps2build update` to fetch the toolchain and SDK. Binaries are also on the [releases page](https://github.com/ps2build/ps2build/releases).
 
-   | Platform | Asset |
-   |---|---|
-   | Windows x64 | `ps2build-<version>-windows-amd64.exe` |
-   | Linux x64 (glibc) | `ps2build-<version>-linux-amd64` |
-   | macOS Intel | `ps2build-<version>-darwin-amd64` |
-   | macOS Apple silicon | `ps2build-<version>-darwin-arm64` |
+ps2build builds PlayStation 2 homebrew. A single `ps2.yaml` describes your EE and IOP targets; ps2build produces the build, IDE metadata and installable packages, and keeps the PS2 SDK and toolchain up to date.
 
-2. Check the download against the checksum file:
-
-   ```
-   sha256sum --check --ignore-missing SHA256SUMS                 # Linux
-   shasum -a 256 --check --ignore-missing SHA256SUMS             # macOS
-   (Get-FileHash <asset>).Hash -eq (Select-String <asset> SHA256SUMS).Line.Split(' ')[0]   # PowerShell
-   ```
-
-3. Rename it to `ps2build` (`ps2build.exe` on Windows), mark it executable on Linux and macOS (`chmod +x ps2build`), and put its folder on your `PATH`. The installer uses `%LOCALAPPDATA%\ps2build` on Windows and `~/.local/share/ps2build` elsewhere.
-
-4. Install the toolchain and SDK:
-
-   ```
-   ps2build update
-   ```
+Documentation: [ps2build.dev](https://ps2build.dev).
 
 ## Usage
 
