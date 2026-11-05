@@ -2,6 +2,10 @@
 
 # ps2build
 
+ps2build builds PlayStation 2 homebrew. A single `ps2.yaml` describes your EE and IOP targets; ps2build produces the build, IDE metadata and installable packages, and keeps the PS2 SDK and toolchain up to date.
+
+Documentation: [ps2build.dev](https://ps2build.dev).
+
 ## Install
 
 Linux and macOS:
@@ -17,10 +21,6 @@ irm https://ps2build.dev/install.ps1 | iex
 ```
 
 This installs ps2build and runs `ps2build update` to fetch the toolchain and SDK. Binaries are also on the [releases page](https://github.com/ps2build/ps2build/releases).
-
-ps2build builds PlayStation 2 homebrew. A single `ps2.yaml` describes your EE and IOP targets; ps2build produces the build, IDE metadata and installable packages, and keeps the PS2 SDK and toolchain up to date.
-
-Documentation: [ps2build.dev](https://ps2build.dev).
 
 ## Usage
 
