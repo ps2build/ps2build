@@ -379,6 +379,12 @@ func extractZip(zipPath, destDir string) error {
 		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
 			return err
 		}
+		if f.Mode()&os.ModeSymlink != 0 {
+			if err := extractSymlink(f, target, destDir); err != nil {
+				return err
+			}
+			continue
+		}
 		if err := extractOne(f, target); err != nil {
 			return err
 		}
@@ -401,4 +407,27 @@ func extractOne(f *zip.File, target string) error {
 
 	_, err = io.Copy(out, rc)
 	return err
+}
+
+func extractSymlink(f *zip.File, target, destDir string) error {
+	rc, err := f.Open()
+	if err != nil {
+		return err
+	}
+	defer rc.Close()
+
+	link, err := io.ReadAll(io.LimitReader(rc, 4096))
+	if err != nil {
+		return err
+	}
+	dest := string(link)
+	resolved := dest
+	if !filepath.IsAbs(resolved) {
+		resolved = filepath.Join(filepath.Dir(target), resolved)
+	}
+	if !strings.HasPrefix(filepath.Clean(resolved), filepath.Clean(destDir)+string(os.PathSeparator)) {
+		return fmt.Errorf("symlink %q points outside the destination", f.Name)
+	}
+	os.Remove(target)
+	return os.Symlink(dest, target)
 }
