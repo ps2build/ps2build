@@ -56,7 +56,7 @@ build obj/hello/src/main.o: ee_cc <PROJECT_ROOT>/src/main.c
   flags = -D_EE$ -G0$ -O2$ -Wall$ -ffunction-sections$ -I<PS2DEV>/toolchain/ee/include$ -I<PS2DEV>/packages/core/common/include
 build obj/hello/hello.unstripped.elf: ee_link obj/hello/src/main.o | <PS2DEV>/packages/core/startup/share/ee/linkfile
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -O2$ -Wl,--gc-sections$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
+  flags = -O2$ -Wl,--gc-sections$ -Wl,-zmax-page-size=128$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
   libs = 
 build bin/hello.elf: ee_strip obj/hello/hello.unstripped.elf
   flags = --strip-all

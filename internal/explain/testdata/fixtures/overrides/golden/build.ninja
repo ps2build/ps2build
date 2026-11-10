@@ -56,7 +56,7 @@ build obj/custom/src/main.o: ee_cc <PROJECT_ROOT>/src/main.c
   flags = -D_EE$ -G0$ -O3$ -Wall$ -ffunction-sections$ -gdwarf-2$ -gz$ -DMY_FEATURE=1$ -DDEBUG_LOGGING$ -I<PS2DEV>/toolchain/ee/include$ -I<PS2DEV>/packages/core/common/include$ -I<PROJECT_ROOT>/vendor/include$ -Wextra
 build bin/custom.elf: ee_link obj/custom/src/main.o | <PROJECT_ROOT>/custom/linkfile
   linkfile = <PROJECT_ROOT>/custom/linkfile
-  flags = -O3$ -Wl,--gc-sections$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib$ -Wl,-Map=custom.map
+  flags = -O3$ -Wl,--gc-sections$ -Wl,-zmax-page-size=128$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib$ -Wl,-Map=custom.map
   libs = -lm$ -lpng
 build bin/custom.bin: ee_objcopy bin/custom.elf
 

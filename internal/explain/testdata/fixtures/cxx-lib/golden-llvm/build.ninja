@@ -60,7 +60,7 @@ build obj/main/src/ee/main.o: ee_cc <PROJECT_ROOT>/src/ee/main.c
 build lib/libgreeter.a: ee_ar obj/greeter/src/lib/greeter.o
 build obj/main/main.unstripped.elf: ee_link_cxx obj/main/src/ee/main.o | <PS2DEV>/packages/core/startup/share/ee/linkfile lib/libgreeter.a
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -Llib$ --gc-sections$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib$ -lc++$ -lc++abi
+  flags = -Llib$ --gc-sections$ -zmax-page-size=128$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib$ -lc++$ -lc++abi
   libs = -lgreeter
 build bin/main.elf: ee_strip obj/main/main.unstripped.elf
   flags = --strip-all

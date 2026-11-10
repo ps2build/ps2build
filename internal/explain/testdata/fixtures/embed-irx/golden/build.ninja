@@ -64,7 +64,7 @@ build obj/helper/helper.notiopmod.elf: iop_link obj/helper/src/iop/helper.o | <P
   libs = 
 build obj/main/main.unstripped.elf: ee_link obj/main/src/ee/main.o obj/_embed/helper_irx.o | <PS2DEV>/packages/core/startup/share/ee/linkfile
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -O2$ -Wl,--gc-sections$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
+  flags = -O2$ -Wl,--gc-sections$ -Wl,-zmax-page-size=128$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
   libs = 
 build obj/helper/helper.notiopmod.stripped.elf: iop_strip obj/helper/helper.notiopmod.elf
   flags = --strip-unneeded$ --remove-section=.pdr$ --remove-section=.comment$ --remove-section=.mdebug.abi32$ --remove-section=.gnu.attributes
