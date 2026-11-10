@@ -59,7 +59,7 @@ build obj/main/src/vu1_probe.vsm.o: dvp_as <PROJECT_ROOT>/src/vu1_probe.vsm
   flags = 
 build obj/main/main.unstripped.elf: ee_link obj/main/src/main.o obj/main/src/vu1_probe.vsm.o | <PS2DEV>/packages/core/startup/share/ee/linkfile
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = --gc-sections$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib
+  flags = --gc-sections$ -zmax-page-size=128$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib
   libs = 
 build bin/main.elf: ee_strip obj/main/main.unstripped.elf
   flags = --strip-all

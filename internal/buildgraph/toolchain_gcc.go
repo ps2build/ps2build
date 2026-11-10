@@ -76,8 +76,9 @@ func (gccToolchain) IOPLinkTool() string   { return iopGCC }
 func (gccToolchain) EELinkTrailer() string { return "" }
 
 // -nostartfiles: crt0.o lives inside libstartup.a, not a toolchain startfile dir.
+// 128-byte segment alignment, as ps2sdk's Makefile.eeglobal; without it the first PT_LOAD is padded to file offset 0x10000.
 func (gccToolchain) EELinkFlags(opt string) []string {
-	return []string{opt, "-Wl,--gc-sections", "-nostartfiles"}
+	return []string{opt, "-Wl,--gc-sections", "-Wl,-zmax-page-size=128", "-nostartfiles"}
 }
 
 func (gccToolchain) EELinkLibDirs() []string {

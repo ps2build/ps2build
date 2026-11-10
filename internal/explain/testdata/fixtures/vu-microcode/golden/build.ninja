@@ -58,7 +58,7 @@ build obj/main/src/vu1_probe.vsm.o: dvp_as <PROJECT_ROOT>/src/vu1_probe.vsm
   flags = 
 build obj/main/main.unstripped.elf: ee_link obj/main/src/main.o obj/main/src/vu1_probe.vsm.o | <PS2DEV>/packages/core/startup/share/ee/linkfile
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -O2$ -Wl,--gc-sections$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
+  flags = -O2$ -Wl,--gc-sections$ -Wl,-zmax-page-size=128$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
   libs = 
 build bin/main.elf: ee_strip obj/main/main.unstripped.elf
   flags = --strip-all

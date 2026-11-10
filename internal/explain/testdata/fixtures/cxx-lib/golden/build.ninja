@@ -59,7 +59,7 @@ build obj/main/src/ee/main.o: ee_cc <PROJECT_ROOT>/src/ee/main.c
 build lib/libgreeter.a: ee_ar obj/greeter/src/lib/greeter.o
 build obj/main/main.unstripped.elf: ee_link_cxx obj/main/src/ee/main.o | <PS2DEV>/packages/core/startup/share/ee/linkfile lib/libgreeter.a
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -Llib$ -O2$ -Wl,--gc-sections$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
+  flags = -Llib$ -O2$ -Wl,--gc-sections$ -Wl,-zmax-page-size=128$ -nostartfiles$ -L<PS2DEV>/toolchain/ee/lib
   libs = -lgreeter
 build bin/main.elf: ee_strip obj/main/main.unstripped.elf
   flags = --strip-all

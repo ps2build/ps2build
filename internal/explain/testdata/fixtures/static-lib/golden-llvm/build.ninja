@@ -60,7 +60,7 @@ build obj/main/src/ee/main.o: ee_cc <PROJECT_ROOT>/src/ee/main.c
 build lib/libmymath.a: ee_ar obj/mymath/src/lib/mymath.o
 build obj/main/main.unstripped.elf: ee_link obj/main/src/ee/main.o | <PS2DEV>/packages/core/startup/share/ee/linkfile lib/libmymath.a
   linkfile = <PS2DEV>/packages/core/startup/share/ee/linkfile
-  flags = -Llib$ --gc-sections$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib
+  flags = -Llib$ --gc-sections$ -zmax-page-size=128$ -L<PS2DEV>/llvm-toolchain/ee/mips64r5900el-ps2-elf/lib
   libs = -lmymath
 build bin/main.elf: ee_strip obj/main/main.unstripped.elf
   flags = --strip-all
