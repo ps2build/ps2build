@@ -149,7 +149,9 @@ func (llvmToolchain) EELinkTrailer() string {
 }
 
 // 128-byte segment alignment, as ps2sdk's Makefile.eeglobal; without it the first PT_LOAD is padded to file offset 0x10000.
-func (llvmToolchain) EELinkFlags(string) []string { return []string{"--gc-sections", "-zmax-page-size=128"} }
+func (llvmToolchain) EELinkFlags(string) []string {
+	return []string{"--gc-sections", "-zmax-page-size=128"}
+}
 
 func (t llvmToolchain) EELinkLibDirs() []string {
 	return []string{path.Join(t.eeSysroot(), "lib")}
