@@ -211,3 +211,58 @@ func TestWithoutSelfReplaceDropsOnlyPS2Build(t *testing.T) {
 		t.Fatalf("got %d components, want %d", len(names), len(allComponents)-1)
 	}
 }
+
+func TestOggVorbis_OptionalWorldComponents(t *testing.T) {
+	for _, name := range []string{"ogg", "vorbis"} {
+		c, ok := findComponent(name)
+		if !ok {
+			t.Fatalf("findComponent(%q) not found", name)
+		}
+		if !c.Optional {
+			t.Errorf("%s must be Optional so a bare update leaves it alone until it is installed by name", name)
+		}
+		if c.Tier != "world" {
+			t.Errorf("%s Tier = %q, want \"world\" so its gcc and llvm zips are both applied", name, c.Tier)
+		}
+		if want := filepath.Join("packages", "world", name); c.Test != want {
+			t.Errorf("%s Test = %q, want %q - packages/world alone is sdk-world's and would count as installed", name, c.Test, want)
+		}
+	}
+}
+
+func TestDefaultTargets_OggVorbisOnlyOnceInstalled(t *testing.T) {
+	has := func(cs []component, name string) bool {
+		for _, c := range cs {
+			if c.Name == name {
+				return true
+			}
+		}
+		return false
+	}
+
+	ps2dev := t.TempDir()
+	// sdk-world on its own must not make ogg or vorbis look installed.
+	if err := os.MkdirAll(filepath.Join(ps2dev, "packages", "world", "gskit"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	targets := defaultTargets(ps2dev)
+	for _, name := range []string{"ogg", "vorbis"} {
+		if has(targets, name) {
+			t.Errorf("bare update would install %s, which was never installed by name", name)
+		}
+	}
+	if !has(targets, "sdk-world") {
+		t.Error("bare update dropped sdk-world")
+	}
+
+	if err := os.MkdirAll(filepath.Join(ps2dev, "packages", "world", "ogg", "lib"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	targets = defaultTargets(ps2dev)
+	if !has(targets, "ogg") {
+		t.Error("bare update skips ogg after it was installed - it would never be kept current")
+	}
+	if has(targets, "vorbis") {
+		t.Error("installing ogg made a bare update pick up vorbis too")
+	}
+}

@@ -38,6 +38,8 @@ var allComponents = []component{
 	{Name: "cmake", Repo: "ps2build/cmake", AssetPrefix: "cmake-", AssetSuffix: ".zip", Test: filepath.Join("cmake", "ps2dev.cmake")},
 	{Name: "sdk-core", Repo: "ps2build/sdk-core", AssetPrefix: "sdk-core-", AssetSuffix: ".zip", Tier: "core", Test: filepath.Join("packages", "core")},
 	{Name: "sdk-world", Repo: "ps2build/sdk-world", AssetPrefix: "sdk-world-", AssetSuffix: ".zip", Tier: "world", Test: filepath.Join("packages", "world")},
+	{Name: "ogg", Repo: "ps2build/ogg", AssetPrefix: "ogg-", AssetSuffix: ".zip", Tier: "world", Test: filepath.Join("packages", "world", "ogg"), Optional: true},
+	{Name: "vorbis", Repo: "ps2build/vorbis", AssetPrefix: "vorbis-", AssetSuffix: ".zip", Tier: "world", Test: filepath.Join("packages", "world", "vorbis"), Optional: true},
 }
 
 func findComponent(name string) (component, bool) {

@@ -92,3 +92,40 @@ func TestRemoveAsideDeletesOldAndPIDSuffixedLeftovers(t *testing.T) {
 		t.Fatalf("leftovers remain: %v", left)
 	}
 }
+
+func TestApplyLayer_OggZipLandsBesideSDKWorld(t *testing.T) {
+	ps2dev := t.TempDir()
+
+	gskit := filepath.Join(ps2dev, "packages", "world", "gskit", "include", "gsKit.h")
+	if err := os.MkdirAll(filepath.Dir(gskit), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(gskit, []byte("// gskit"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// The layout ps2build/ogg's release zips use: packages/world/ogg at the zip root.
+	zipData := buildZip(t, map[string]string{
+		"packages/world/ogg/package.yaml": "name: ogg\n",
+		"packages/world/ogg/lib/libogg.a": "!<arch>\n",
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write(zipData)
+	}))
+	defer server.Close()
+
+	if err := applyLayer(ps2dev, "ogg", server.URL); err != nil {
+		t.Fatalf("applyLayer failed: %v", err)
+	}
+	if _, err := os.Stat(gskit); err != nil {
+		t.Fatalf("sdk-world content was wiped by applying ogg's zip: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(ps2dev, "packages", "world", "ogg", "lib", "libogg.a")); err != nil {
+		t.Fatalf("ogg did not land at packages/world/ogg: %v", err)
+	}
+
+	c, _ := findComponent("ogg")
+	if !componentInstalled(ps2dev, c) {
+		t.Fatal("componentInstalled reports ogg missing after applyLayer - a bare update would never keep it current")
+	}
+}
