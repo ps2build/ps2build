@@ -158,6 +158,14 @@ ps2build validate [compile_commands.json]
 ps2build update [component] [--version V] [--check] [--force]
     Updates an installed suite in place, or bootstraps one from nothing.
 
+ps2build component add NAME... [--version V] [--force]
+    Installs components that are not installed yet, such as llvm-toolchain,
+    ogg and vorbis. --version applies to a single name.
+
+ps2build component list [--available]
+    Lists every component with its installed version. --available also
+    shows the latest release of each.
+
 ps2build schema [--indent N]
     Prints a JSON Schema (draft 2020-12) for the ps2.yaml format.
 

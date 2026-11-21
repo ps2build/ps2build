@@ -19,6 +19,9 @@ var (
 
 const reexecEnvVar = "PS2BUILD_UPDATE_REEXEC"
 
+// runUpdate is update.Run; tests replace it so no release is downloaded.
+var runUpdate = update.Run
+
 var updateCmd = &cobra.Command{
 	Use:   "update [component]",
 	Short: "Update an installed ps2build sdk in place, or bootstrap one from nothing",
@@ -37,7 +40,7 @@ var updateCmd = &cobra.Command{
 
 		sdkRoot := utils.DetectSDKRoot()
 
-		result, runErr := update.Run(update.Options{
+		result, runErr := runUpdate(update.Options{
 			SDKRoot:   sdkRoot,
 			Component: component,
 			Version:   updateVersion,
@@ -69,6 +72,12 @@ var updateCmd = &cobra.Command{
 				fmt.Fprintf(out, "%-*s  %s -> %s\n", width, cr.Name, prev, cr.NewTag)
 			default:
 				fmt.Fprintf(out, "%-*s  already up to date: %s\n", width, cr.Name, cr.PreviousTag)
+			}
+		}
+
+		if runErr == nil && component != "" && component != componentPS2Build && !updateCheck && len(result.Components) == 1 {
+			if cr := result.Components[0]; cr.Updated && cr.PreviousTag == "" {
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: \"ps2build update %[1]s\" installed %[1]s, but installing with update is deprecated; use \"ps2build component add %[1]s\". This keeps working until ps2build 2.0.\n", cr.Name)
 			}
 		}
 
