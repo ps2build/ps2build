@@ -133,22 +133,27 @@ Static libraries (type: ee_lib / type: iop_lib):
   ee_lib's sources, include a .cpp/.cc/.cxx file. See the cxx-lib
   example.`
 
-const cliCommands = `ps2build init [directory] [--name] [--package] [--workspace] [--force]
+const cliCommands = `ps2build init [directory] [--name] [--package] [--workspace] [--toolchain gcc|llvm] [--force]
     Scaffolds a new project: ps2.yaml, a starter EE target, .gitignore,
     and .clangd. --package scaffolds a linkable ee_lib instead of a
     bootable executable; --workspace scaffolds ps2workspace.yaml instead.
+    --toolchain picks the compiler toolchain for the new project.
 
-ps2build build [-c ps2.yaml] [-o build]
+ps2build build [-c ps2.yaml] [-o build] [--toolchain gcc|llvm]
     Runs generate (below), then invokes ninja.
 
-ps2build generate [-c ps2.yaml] [-o build]
+ps2build generate [-c ps2.yaml] [-o build] [--toolchain gcc|llvm]
     Writes <out-dir>/build.ninja and <out-dir>/compile_commands.json
     without compiling. "ps2build build" is the normal path and the only
     one guaranteed to re-evaluate glob sources before building.
 
-ps2build install [-c ps2.yaml] [-o build] [--packages DIR]
+ps2build install [-c ps2.yaml] [-o build] [--packages DIR] [--toolchain gcc|llvm]
     Builds, then copies each package's declared artifacts into
     $PS2DEV/packages.
+
+ps2build validate [compile_commands.json]
+    Checks a compile database for absolute paths, target triple, GCC-only
+    flags and missing include dirs.
 
 ps2build update [component] [--version V] [--check] [--force]
     Updates an installed suite in place, or bootstraps one from nothing.
