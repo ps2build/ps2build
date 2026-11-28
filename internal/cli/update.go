@@ -26,7 +26,7 @@ var updateCmd = &cobra.Command{
 	Use:   "update [component]",
 	Short: "Update an installed ps2build sdk in place, or bootstrap one from nothing",
 	Long: "With no arguments, brings every component to its latest release, ps2build first. Given a component name, updates just that one, optionally pinned with --version.\n\n" +
-		"Optional components (llvm-toolchain, ogg, vorbis) are skipped by a bare update until they have been installed by name once; after that a bare update keeps them current too.\n\n" +
+		"Optional components (llvm-toolchain, ogg, vorbis) are skipped by a bare update until they have been added with \"ps2build component add\"; after that a bare update keeps them current too.\n\n" +
 		"Run against a directory with nothing installed yet, this bootstraps a full install instead.",
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -77,7 +77,7 @@ var updateCmd = &cobra.Command{
 
 		if runErr == nil && component != "" && component != componentPS2Build && !updateCheck && len(result.Components) == 1 {
 			if cr := result.Components[0]; cr.Updated && cr.PreviousTag == "" {
-				fmt.Fprintf(cmd.ErrOrStderr(), "warning: \"ps2build update %[1]s\" installed %[1]s, but installing with update is deprecated; use \"ps2build component add %[1]s\". This keeps working until ps2build 2.0.\n", cr.Name)
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: \"ps2build update %[1]s\" installed %[1]s, but installing with update is deprecated; use \"ps2build component add %[1]s\".\n", cr.Name)
 			}
 		}
 

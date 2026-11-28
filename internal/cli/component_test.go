@@ -236,7 +236,7 @@ func TestComponent_HasNoRemove(t *testing.T) {
 	}
 }
 
-const deprecation = "warning: \"ps2build update ogg\" installed ogg, but installing with update is deprecated; use \"ps2build component add ogg\". This keeps working until ps2build 2.0.\n"
+const deprecation = "warning: \"ps2build update ogg\" installed ogg, but installing with update is deprecated; use \"ps2build component add ogg\".\n"
 
 func TestUpdate_NameNotInstalledBeforeWarnsOnStderr(t *testing.T) {
 	fakeSDK(t, nil, installs("v2026.10.13"))

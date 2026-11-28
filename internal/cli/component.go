@@ -129,6 +129,6 @@ func init() {
 	componentCmd.AddCommand(componentAddCmd, componentListCmd)
 
 	componentAddCmd.Flags().StringVar(&componentAddVersion, "version", "", "release tag to install (one component only; defaults to latest)")
-	componentAddCmd.Flags().BoolVar(&componentAddForce, "force", false, "reinstall even if already installed")
+	componentAddCmd.Flags().BoolVar(&componentAddForce, "force", false, "reinstall the latest release even if already installed")
 	componentListCmd.Flags().BoolVar(&componentListAvailable, "available", false, "also show the latest release of each component")
 }
