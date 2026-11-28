@@ -24,7 +24,7 @@ const (
 )
 
 type Config struct {
-	SchemaVersion *int          `yaml:"schema_version,omitempty" jsonschema:"minimum=1,description=The schema this file is written for (the same number applies to ps2workspace.yaml). Missing means 1; this ps2build reads schema 1 and refuses a higher number. Within schema 1.x keys are only added: none is ever removed or given a new meaning. Unknown keys are ignored with a warning"`
+	SchemaVersion *int          `yaml:"schema_version,omitempty" jsonschema:"minimum=1,description=The schema this file is written for (the same number applies to ps2workspace.yaml). Missing means 1; this ps2build reads schema 1 and refuses a higher number. Within schema 1 keys are only added: none is ever removed or given a new meaning. Unknown keys are ignored with a warning"`
 	Project       string        `yaml:"project" jsonschema:"required,description=Project name, used for documentation purposes only"`
 	PS2SDK        string        `yaml:"ps2sdk,omitempty" jsonschema:"description=Ignored. Kept so existing ps2.yaml files still load"`
 	Toolchain     ToolchainKind `yaml:"toolchain,omitempty" jsonschema:"enum=gcc,enum=llvm,description=Compiler toolchain to build with. The --toolchain flag and the PS2BUILD_TOOLCHAIN environment variable take precedence; the default is gcc"`
