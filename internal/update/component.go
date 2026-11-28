@@ -98,6 +98,14 @@ func applyLayer(ps2dev, name, url string) error {
 	if err := extractZip(zipPath, staging); err != nil {
 		return fmt.Errorf("extracting downloaded %s: %w", name, err)
 	}
+	owned, err := collectOwned(name, staging)
+	if err != nil {
+		return fmt.Errorf("listing the files of %s: %w", name, err)
+	}
+	previous, err := loadOwned(ps2dev, name)
+	if err != nil {
+		previous = nil // an unreadable record is treated as none: nothing is removed
+	}
 
 	entries, err := os.ReadDir(staging)
 	if err != nil {
@@ -116,7 +124,7 @@ func applyLayer(ps2dev, name, url string) error {
 		}
 	}
 
-	return nil
+	return recordLayer(ps2dev, owned, previous)
 }
 
 // defaultTargets lists what a bare update touches: every component except optional ones not yet installed.

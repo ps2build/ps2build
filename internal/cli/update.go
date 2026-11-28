@@ -26,6 +26,7 @@ var updateCmd = &cobra.Command{
 	Use:   "update [component]",
 	Short: "Update an installed ps2build sdk in place, or bootstrap one from nothing",
 	Long: "With no arguments, brings every component to its latest release, ps2build first. Given a component name, updates just that one, optionally pinned with --version.\n\n" +
+		"An update removes files the new release dropped, never files it didn't install.\n\n" +
 		"Optional components (llvm-toolchain, ogg, vorbis) are skipped by a bare update until they have been added with \"ps2build component add\"; after that a bare update keeps them current too.\n\n" +
 		"Run against a directory with nothing installed yet, this bootstraps a full install instead.",
 	Args: cobra.MaximumNArgs(1),
