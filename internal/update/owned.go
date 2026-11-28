@@ -99,7 +99,7 @@ func writeOwned(sdkRoot string, rec ownership) error {
 	return os.Rename(tmp.Name(), ownedRecordPath(sdkRoot, rec.Layer))
 }
 
-// otherOwnedPaths returns every path another layer's record lists. A record that cannot be read is an error: with
+// otherOwnedPaths returns the ownedKey of every path another layer's record lists. A record that cannot be read is an error: with
 // it unknown, nothing can be shown not to belong to another layer.
 func otherOwnedPaths(sdkRoot, layer string) (map[string]bool, error) {
 	entries, err := os.ReadDir(filepath.Dir(ownedRecordPath(sdkRoot, layer)))
@@ -117,10 +117,16 @@ func otherOwnedPaths(sdkRoot, layer string) (map[string]bool, error) {
 			return nil, err
 		}
 		for _, f := range rec.Files {
-			paths[f.Path] = true
+			paths[ownedKey(f.Path)] = true
 		}
 	}
 	return paths, nil
+}
+
+// ownedKey is the map key for a recorded path. It folds case because a disk that ignores case resolves two paths
+// that differ only in case to one file.
+func ownedKey(rel string) string {
+	return strings.ToLower(rel)
 }
 
 // recordLayer writes the layer's new record, then removes what the release it replaces installed and this one did not.
@@ -143,10 +149,10 @@ func recordLayer(sdkRoot string, cur ownership, previous *ownership) error {
 
 	keep := map[string]bool{}
 	for _, f := range cur.Files {
-		keep[f.Path] = true
+		keep[ownedKey(f.Path)] = true
 	}
 	for _, f := range previous.Files {
-		if keep[f.Path] || others[f.Path] {
+		if key := ownedKey(f.Path); keep[key] || others[key] {
 			continue
 		}
 		abs, ok := ownedAbsPath(sdkRoot, f.Path)
@@ -170,14 +176,18 @@ func recordLayer(sdkRoot string, cur ownership, previous *ownership) error {
 // ownedAbsPath resolves a recorded path under the sdk root, refusing anything that would leave it or touch the
 // bookkeeping directories.
 func ownedAbsPath(sdkRoot, rel string) (string, bool) {
-	if rel == "" || strings.HasPrefix(rel, "/") || filepath.IsAbs(rel) {
+	if strings.HasPrefix(rel, "/") || !filepath.IsLocal(filepath.FromSlash(rel)) {
 		return "", false
 	}
+
 	clean := filepath.Clean(filepath.FromSlash(rel))
 	first, _, _ := strings.Cut(filepath.ToSlash(clean), "/")
-	if clean == "." || first == ".." || first == ".ps2build" || first == ".update-staging" {
+	// Windows ignores case, and drops trailing dots and spaces from a name.
+	first = strings.TrimRight(first, ". ")
+	if first == "" || strings.EqualFold(first, ".ps2build") || strings.EqualFold(first, ".update-staging") {
 		return "", false
 	}
+
 	return filepath.Join(sdkRoot, clean), true
 }
 

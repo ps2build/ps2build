@@ -292,6 +292,58 @@ func TestApplyLayer_UnreadableOrHostileRecordsRemoveNothing(t *testing.T) {
 	}
 }
 
+func TestApplyLayer_KeepsAFileTheNewReleaseRenamedByCaseOnly(t *testing.T) {
+	root := t.TempDir()
+	mustApply(t, root, "sdk-core", map[string]string{"packages/core/a/Foo.h": "foo", "packages/core/Inc/b.h": "b"})
+	mustApply(t, root, "sdk-core", map[string]string{"packages/core/a/foo.h": "foo", "packages/core/inc/b.h": "b"})
+
+	if got := read(t, root, "packages/core/a/foo.h"); got != "foo" {
+		t.Errorf("foo.h = %q, want the new release's content", got)
+	}
+	if got := read(t, root, "packages/core/inc/b.h"); got != "b" {
+		t.Errorf("inc/b.h = %q, want the new release's content", got)
+	}
+}
+
+func TestApplyLayer_KeepsAFileAnotherComponentOwnsUnderAnotherCase(t *testing.T) {
+	root := t.TempDir()
+	mustApply(t, root, "sdk-core", map[string]string{"packages/core/a.h": "a", "packages/core/Shared.h": "s"})
+	mustApply(t, root, "sdk-world", map[string]string{"packages/core/shared.h": "s"})
+	mustApply(t, root, "sdk-core", map[string]string{"packages/core/a.h": "a"})
+
+	if got := read(t, root, "packages/core/shared.h"); got != "s" {
+		t.Errorf("shared.h = %q, want the file sdk-world installed", got)
+	}
+}
+
+func TestOwnedAbsPath(t *testing.T) {
+	root := t.TempDir()
+	for _, rel := range []string{
+		"",
+		".",
+		"..",
+		"../outside",
+		"a/../../outside",
+		"/etc/hostname",
+		".ps2build/owned/sdk-core.json",
+		".PS2BUILD/owned/sdk-core.json",
+		".ps2build./owned/sdk-core.json",
+		".ps2build /owned/sdk-core.json",
+		"a/../.Ps2Build/owned/sdk-core.json",
+		".update-staging/x",
+		".UPDATE-STAGING/x",
+	} {
+		if abs, ok := ownedAbsPath(root, rel); ok {
+			t.Errorf("ownedAbsPath(%q) = %q, want it refused", rel, abs)
+		}
+	}
+
+	want := filepath.Join(root, "packages", "core", "a.h")
+	if abs, ok := ownedAbsPath(root, "packages/core/a.h"); !ok || abs != want {
+		t.Errorf("ownedAbsPath(packages/core/a.h) = %q, %v, want %q", abs, ok, want)
+	}
+}
+
 func TestApplySDKTier_RecordsEachLayerUnderItsOwnName(t *testing.T) {
 	root := t.TempDir()
 	gcc := serve(t, map[string]string{"packages/core/g.h": "g"})
