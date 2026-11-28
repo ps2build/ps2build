@@ -3,6 +3,7 @@ package update
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -264,5 +265,25 @@ func TestDefaultTargets_OggVorbisOnlyOnceInstalled(t *testing.T) {
 	}
 	if has(targets, "vorbis") {
 		t.Error("installing ogg made a bare update pick up vorbis too")
+	}
+}
+
+func TestComponents_ListsEveryComponentWithItsOptionalFlag(t *testing.T) {
+	var optional []string
+	seen := map[string]bool{}
+	for _, c := range Components() {
+		if seen[c.Name] {
+			t.Errorf("component %s listed twice", c.Name)
+		}
+		seen[c.Name] = true
+		if c.Optional {
+			optional = append(optional, c.Name)
+		}
+	}
+	if len(seen) != len(allComponents) {
+		t.Errorf("Components() has %d entries, want %d", len(seen), len(allComponents))
+	}
+	if got := strings.Join(optional, ","); got != "llvm-toolchain,ogg,vorbis" {
+		t.Errorf("optional components = %s, want llvm-toolchain,ogg,vorbis", got)
 	}
 }

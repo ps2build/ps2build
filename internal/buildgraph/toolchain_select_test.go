@@ -63,7 +63,7 @@ func TestLLVMToolchainVerifyReportsMissingInstall(t *testing.T) {
 	tc := newTestLLVM(t)
 	err := tc.Verify()
 	var notInstalled *NotInstalledError
-	if !errors.As(err, &notInstalled) || notInstalled.Kind != ToolchainLLVM || !strings.Contains(err.Error(), "ps2build update llvm-toolchain") {
+	if !errors.As(err, &notInstalled) || notInstalled.Kind != ToolchainLLVM || !strings.Contains(err.Error(), "ps2build component add llvm-toolchain") {
 		t.Fatalf("Verify() = %v, want a NotInstalledError naming the install command", err)
 	}
 

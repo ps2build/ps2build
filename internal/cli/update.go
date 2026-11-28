@@ -19,12 +19,15 @@ var (
 
 const reexecEnvVar = "PS2BUILD_UPDATE_REEXEC"
 
+// runUpdate is update.Run; tests replace it so no release is downloaded.
+var runUpdate = update.Run
+
 var updateCmd = &cobra.Command{
 	Use:   "update [component]",
 	Short: "Update an installed ps2build sdk in place, or bootstrap one from nothing",
 	Long: "With no arguments, brings every component to its latest release, ps2build first. Given a component name, updates just that one, optionally pinned with --version.\n\n" +
 		"An update removes files the new release dropped, never files it didn't install.\n\n" +
-		"Optional components (llvm-toolchain, ogg, vorbis) are skipped by a bare update until they have been installed by name once; after that a bare update keeps them current too.\n\n" +
+		"Optional components (llvm-toolchain, ogg, vorbis) are skipped by a bare update until they have been added with \"ps2build component add\"; after that a bare update keeps them current too.\n\n" +
 		"Run against a directory with nothing installed yet, this bootstraps a full install instead.",
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -38,7 +41,7 @@ var updateCmd = &cobra.Command{
 
 		sdkRoot := utils.DetectSDKRoot()
 
-		result, runErr := update.Run(update.Options{
+		result, runErr := runUpdate(update.Options{
 			SDKRoot:   sdkRoot,
 			Component: component,
 			Version:   updateVersion,
@@ -70,6 +73,12 @@ var updateCmd = &cobra.Command{
 				fmt.Fprintf(out, "%-*s  %s -> %s\n", width, cr.Name, prev, cr.NewTag)
 			default:
 				fmt.Fprintf(out, "%-*s  already up to date: %s\n", width, cr.Name, cr.PreviousTag)
+			}
+		}
+
+		if runErr == nil && component != "" && component != componentPS2Build && !updateCheck && len(result.Components) == 1 {
+			if cr := result.Components[0]; cr.Updated && cr.PreviousTag == "" {
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: \"ps2build update %[1]s\" installed %[1]s, but installing with update is deprecated; use \"ps2build component add %[1]s\".\n", cr.Name)
 			}
 		}
 

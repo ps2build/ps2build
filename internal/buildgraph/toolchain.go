@@ -38,7 +38,7 @@ type NotInstalledError struct {
 }
 
 func (e *NotInstalledError) Error() string {
-	return fmt.Sprintf("the %s toolchain is not installed at %s (run \"ps2build update %s\")", e.Kind, e.Root, e.Component)
+	return fmt.Sprintf("the %s toolchain is not installed at %s (run \"ps2build component add %s\")", e.Kind, e.Root, e.Component)
 }
 
 // SelectToolchain applies the precedence --toolchain flag, PS2BUILD_TOOLCHAIN, the project file's toolchain:, then gcc.

@@ -42,6 +42,21 @@ var allComponents = []component{
 	{Name: "vorbis", Repo: "ps2build/vorbis", AssetPrefix: "vorbis-", AssetSuffix: ".zip", Tier: "world", Test: filepath.Join("packages", "world", "vorbis"), Optional: true},
 }
 
+// ComponentInfo describes one component an sdk is made of.
+type ComponentInfo struct {
+	Name     string
+	Optional bool // skipped by a bare update until installed by name
+}
+
+// Components lists every component, in install order.
+func Components() []ComponentInfo {
+	out := make([]ComponentInfo, len(allComponents))
+	for i, c := range allComponents {
+		out[i] = ComponentInfo{Name: c.Name, Optional: c.Optional}
+	}
+	return out
+}
+
 func findComponent(name string) (component, bool) {
 	for _, c := range allComponents {
 		if c.Name == name {
