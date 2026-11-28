@@ -47,3 +47,18 @@ func TestValidSections_NoAliasesListed(t *testing.T) {
 		t.Errorf("ValidSections() contains target_types %d times, want exactly 1", count)
 	}
 }
+
+func TestCLICommandsListsWhatTheCLIAccepts(t *testing.T) {
+	text := strings.TrimSpace(cliCommands)
+	for _, want := range []string{
+		"ps2build init [directory] [--name] [--package] [--workspace] [--toolchain gcc|llvm] [--force]",
+		"ps2build build [-c ps2.yaml] [-o build] [--toolchain gcc|llvm]",
+		"ps2build generate [-c ps2.yaml] [-o build] [--toolchain gcc|llvm]",
+		"ps2build install [-c ps2.yaml] [-o build] [--packages DIR] [--toolchain gcc|llvm]",
+		"ps2build validate [compile_commands.json]",
+	} {
+		if !strings.Contains(text, want) {
+			t.Errorf("cli_commands is missing %q", want)
+		}
+	}
+}
