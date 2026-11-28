@@ -35,7 +35,7 @@ func registerGetSchema(s *mcp.Server) {
 // --- explain ---
 
 type explainArgs struct {
-	Section string `json:"section,omitempty" jsonschema:"One section to return overview, target_types, cli_commands, env_vars, v1_scope, ps2_yaml_format or examples - the names \"ps2build explain --section\" accepts. Omit for the full document."`
+	Section string `json:"section,omitempty" jsonschema:"One section to return: overview, target_types, cli_commands, env_vars, v1_scope, ps2_yaml_format or examples - the names \"ps2build explain --section\" accepts. Omit for the full document."`
 }
 
 type explainResult struct {

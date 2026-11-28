@@ -48,7 +48,6 @@ func TestValidSections_NoAliasesListed(t *testing.T) {
 	}
 }
 
-// The CLI section must list the flags the commands really take; each entry here is a flag or command that once drifted out of it.
 func TestCLICommandsListsWhatTheCLIAccepts(t *testing.T) {
 	text := strings.TrimSpace(cliCommands)
 	for _, want := range []string{
