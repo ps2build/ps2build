@@ -2,6 +2,7 @@ package workspace
 
 import (
 	"github.com/ps2build/ps2build/internal/buildgraph"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -196,5 +197,83 @@ func TestBuild_MemberToolchainMustMatchWorkspace(t *testing.T) {
 	_, err = Build(filepath.Join(root, "ps2workspace.yaml"), filepath.Join(t.TempDir(), "out"), tc)
 	if err == nil || !strings.Contains(err.Error(), "conflicts with the workspace") {
 		t.Errorf("Build() error = %v, want a toolchain conflict naming the member", err)
+	}
+}
+
+func TestLoadSchemaVersion(t *testing.T) {
+	cases := []struct {
+		name, body, wantErr string
+	}{
+		{"missing means 1", "workspace: w\nmembers: [a]\n", ""},
+		{"1 loads", "schema_version: 1\nworkspace: w\nmembers: [a]\n", ""},
+		{"2 needs a newer ps2build", "schema_version: 2\nworkspace: w\nmembers: [a]\n", "schema_version 2 needs a newer ps2build (this is dev, which reads up to 1); run \"ps2build update\""},
+		{"0 is an error", "schema_version: 0\nworkspace: w\nmembers: [a]\n", "schema_version must be 1 or higher, got 0"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "ps2workspace.yaml")
+			writeFile(t, path, tc.body)
+			_, err := Load(path)
+			if tc.wantErr == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+				return
+			}
+			if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+				t.Fatalf("Load error = %v, want it to contain %q", err, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestLoadUnknownKeysWarnAndAreIgnored(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "ps2workspace.yaml")
+	writeFile(t, path, "workspace: w\nfoo: 1\nmembers: [a, b]\n")
+	c, warnings, err := LoadWithWarnings(path)
+	if err != nil {
+		t.Fatalf("Load: %v - an unknown key must not be an error", err)
+	}
+	if want := path + ": unknown key \"foo\" ignored"; len(warnings) != 1 || warnings[0] != want {
+		t.Errorf("warnings = %q, want [%q]", warnings, want)
+	}
+	if len(c.Members) != 2 {
+		t.Errorf("members = %v, want both kept", c.Members)
+	}
+}
+
+func TestLoadEmptyFileStillSaysMembersMustNotBeEmpty(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "ps2workspace.yaml")
+	writeFile(t, path, "")
+	if _, err := Load(path); err == nil || !strings.Contains(err.Error(), "members must not be empty") {
+		t.Errorf("Load error = %v, want the members message", err)
+	}
+}
+
+func TestBuild_MemberUnknownKeyWarnsAndBuilds(t *testing.T) {
+	test.SetupCommonIncludeDir()
+	root := newTwoMemberWorkspace(t)
+	member := filepath.Join(root, "consumer", "ps2.yaml")
+	body, err := os.ReadFile(member)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeFile(t, member, string(body)+"    foo: 1\n")
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	orig := os.Stderr
+	os.Stderr = w
+	_, buildErr := Build(filepath.Join(root, "ps2workspace.yaml"), filepath.Join(t.TempDir(), "out"), gccToolchain(t))
+	os.Stderr = orig
+	w.Close()
+	if buildErr != nil {
+		t.Fatalf("Build: %v - an unknown key in a member must not fail the build", buildErr)
+	}
+	got, _ := io.ReadAll(r)
+	if want := "warning: " + member + ": unknown key \"targets[0].foo\" ignored\n"; !strings.Contains(string(got), want) {
+		t.Errorf("stderr = %q, want it to contain %q", got, want)
 	}
 }

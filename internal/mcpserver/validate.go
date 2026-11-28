@@ -13,9 +13,11 @@ type validateTargetArgs struct {
 }
 
 type validateTargetResult struct {
-	Valid           bool   `json:"valid"`
-	Error           string `json:"error,omitempty"`
-	PS2BuildVersion string `json:"ps2build_version"`
+	Valid bool   `json:"valid"`
+	Error string `json:"error,omitempty"`
+	// Warnings lists problems that do not stop the file from loading, such as unknown keys that are ignored.
+	Warnings        []string `json:"warnings,omitempty"`
+	PS2BuildVersion string   `json:"ps2build_version"`
 }
 
 func registerValidateTarget(s *mcp.Server) {
@@ -23,14 +25,14 @@ func registerValidateTarget(s *mcp.Server) {
 		Name:        "validate_target",
 		Description: "Validate a ps2.yaml without running a full generate/build - fast feedback while authoring a build definition.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, args validateTargetArgs) (*mcp.CallToolResult, validateTargetResult, error) {
-		cfg, err := config.Load(args.Path)
+		cfg, warnings, err := config.LoadWithWarnings(args.Path)
 		if err != nil {
 			return nil, validateTargetResult{Valid: false, Error: err.Error(), PS2BuildVersion: version}, nil
 		}
 		if err := config.Validate(cfg); err != nil {
-			return nil, validateTargetResult{Valid: false, Error: err.Error(), PS2BuildVersion: version}, nil
+			return nil, validateTargetResult{Valid: false, Error: err.Error(), Warnings: warnings, PS2BuildVersion: version}, nil
 		}
 		config.ApplyDefaults(cfg)
-		return nil, validateTargetResult{Valid: true, PS2BuildVersion: version}, nil
+		return nil, validateTargetResult{Valid: true, Warnings: warnings, PS2BuildVersion: version}, nil
 	})
 }

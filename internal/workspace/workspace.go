@@ -1,13 +1,13 @@
 package workspace
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"path"
 	"path/filepath"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/ps2build/ps2build/internal/buildgraph"
 	"github.com/ps2build/ps2build/internal/config"
@@ -15,25 +15,39 @@ import (
 
 // Config is one ps2workspace.yaml.
 type Config struct {
-	Workspace string               `yaml:"workspace"`
-	Toolchain config.ToolchainKind `yaml:"toolchain,omitempty"` // applies to every member; a member that sets its own must agree
-	Members   []string             `yaml:"members"`             // paths relative to the workspace file's own directory, each containing a ps2.yaml
+	SchemaVersion *int                 `yaml:"schema_version,omitempty"` // missing means 1; see config.SchemaVersion
+	Workspace     string               `yaml:"workspace"`
+	Toolchain     config.ToolchainKind `yaml:"toolchain,omitempty"` // applies to every member; a member that sets its own must agree
+	Members       []string             `yaml:"members"`             // paths relative to the workspace file's own directory, each containing a ps2.yaml
 }
 
-// Load parses one ps2workspace.yaml at path.
+// Load parses one ps2workspace.yaml at path. Unknown keys are ignored with a warning on stderr.
 func Load(path string) (*Config, error) {
+	c, warnings, err := LoadWithWarnings(path)
+	if err == nil {
+		config.Warn(warnings)
+	}
+	return c, err
+}
+
+// LoadWithWarnings is Load, but returns the unknown-key warnings instead of printing them.
+func LoadWithWarnings(path string) (*Config, []string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var c Config
-	if err := yaml.Unmarshal(data, &c); err != nil {
-		return nil, fmt.Errorf("parsing %s: %w", path, err)
+	warnings, err := config.Decode(path, data, &c)
+	if err != nil && !errors.Is(err, io.EOF) { // an empty file falls through to the members check
+		return nil, nil, err
+	}
+	if err := config.CheckSchemaVersion(path, c.SchemaVersion); err != nil {
+		return nil, nil, err
 	}
 	if len(c.Members) == 0 {
-		return nil, fmt.Errorf("%s: members must not be empty", path)
+		return nil, nil, fmt.Errorf("%s: members must not be empty", path)
 	}
-	return &c, nil
+	return &c, warnings, nil
 }
 
 type member struct {

@@ -1,12 +1,9 @@
 package config
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -27,10 +24,11 @@ const (
 )
 
 type Config struct {
-	Project   string        `yaml:"project" jsonschema:"required,description=Project name, used for documentation purposes only"`
-	PS2SDK    string        `yaml:"ps2sdk,omitempty" jsonschema:"description=Ignored. Kept so existing ps2.yaml files still load"`
-	Toolchain ToolchainKind `yaml:"toolchain,omitempty" jsonschema:"enum=gcc,enum=llvm,description=Compiler toolchain to build with. The --toolchain flag and the PS2BUILD_TOOLCHAIN environment variable take precedence; the default is gcc"`
-	Targets   []Target      `yaml:"targets" jsonschema:"required,minItems=1,description=The list of EE and IOP build targets in this project"`
+	SchemaVersion *int          `yaml:"schema_version,omitempty" jsonschema:"minimum=1,description=The schema this file is written for (the same number applies to ps2workspace.yaml). Missing means 1; this ps2build reads schema 1 and refuses a higher number. Within schema 1 keys are only added: none is ever removed or given a new meaning. Unknown keys are ignored with a warning"`
+	Project       string        `yaml:"project" jsonschema:"required,description=Project name, used for documentation purposes only"`
+	PS2SDK        string        `yaml:"ps2sdk,omitempty" jsonschema:"description=Ignored. Kept so existing ps2.yaml files still load"`
+	Toolchain     ToolchainKind `yaml:"toolchain,omitempty" jsonschema:"enum=gcc,enum=llvm,description=Compiler toolchain to build with. The --toolchain flag and the PS2BUILD_TOOLCHAIN environment variable take precedence; the default is gcc"`
+	Targets       []Target      `yaml:"targets" jsonschema:"required,minItems=1,description=The list of EE and IOP build targets in this project"`
 }
 
 type Target struct {
@@ -65,20 +63,31 @@ func ParseEmbedIRXEntry(entry string) (resolveName, symbolName string) {
 	return entry, entry
 }
 
+// Load reads the ps2.yaml at path. Unknown keys are ignored with a warning on stderr.
 func Load(path string) (*Config, error) {
+	cfg, warnings, err := LoadWithWarnings(path)
+	if err == nil {
+		Warn(warnings)
+	}
+	return cfg, err
+}
+
+// LoadWithWarnings is Load, but returns the unknown-key warnings instead of printing them.
+func LoadWithWarnings(path string) (*Config, []string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("reading %s: %w", path, err)
+		return nil, nil, fmt.Errorf("reading %s: %w", path, err)
 	}
 
 	var cfg Config
-	dec := yaml.NewDecoder(bytes.NewReader(data))
-	dec.KnownFields(true)
-	if err := dec.Decode(&cfg); err != nil {
-		return nil, fmt.Errorf("parsing %s: %w", path, err)
+	warnings, err := Decode(path, data, &cfg)
+	if err != nil {
+		return nil, nil, err
 	}
-
-	return &cfg, nil
+	if err := CheckSchemaVersion(path, cfg.SchemaVersion); err != nil {
+		return nil, nil, err
+	}
+	return &cfg, warnings, nil
 }
 
 // LoadValidated reads, validates, and applies defaults to the ps2.yaml at

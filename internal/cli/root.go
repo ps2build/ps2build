@@ -3,6 +3,7 @@ package cli
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/ps2build/ps2build/internal/config"
 	"github.com/ps2build/ps2build/internal/update"
 )
 
@@ -21,6 +22,7 @@ var rootCmd = &cobra.Command{
 const thirdPartyNoticePointer = "Third-party licenses: see licenses/ in the source repository (github.com/ps2build/ps2build).\n"
 
 func init() {
+	config.BuildVersion = version
 	rootCmd.SetVersionTemplate("ps2build {{.Version}}\n" + thirdPartyNoticePointer)
 }
 

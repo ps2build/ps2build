@@ -60,3 +60,30 @@ func keys(m map[string]any) []string {
 	}
 	return out
 }
+
+func TestGenerateHasSchemaVersion(t *testing.T) {
+	data, err := json.Marshal(Generate())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc map[string]any
+	if err := json.Unmarshal(data, &doc); err != nil {
+		t.Fatal(err)
+	}
+	var props map[string]any
+	if p, ok := doc["properties"].(map[string]any); ok {
+		props = p
+	} else if defs, ok := doc["$defs"].(map[string]any); ok {
+		props, _ = defs["Config"].(map[string]any)["properties"].(map[string]any)
+	}
+	sv, ok := props["schema_version"].(map[string]any)
+	if !ok {
+		t.Fatalf("schema has no schema_version property, got: %v", keys(props))
+	}
+	if sv["type"] != "integer" || sv["minimum"] != float64(1) {
+		t.Errorf("schema_version = %v, want an integer with minimum 1", sv)
+	}
+	if _, required := sv["required"]; required {
+		t.Error("schema_version must stay optional: a missing one means 1")
+	}
+}
